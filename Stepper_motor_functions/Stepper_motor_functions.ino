@@ -1,3 +1,6 @@
+#define CW  LOW
+#define CCW HIGH
+
 const int ledPin =  LED_BUILTIN;
 int ledState = LOW;
 const int dir = 2; //determina a direção
@@ -17,33 +20,34 @@ void setup() {
 }
 
 void loop() {
-  backAndForth(3, 360, 12);
+  //backAndForth(3, 360, 12);
+  //spin(3, 12, CW);
   delay(99999999999);
 
 
 }
 
 /*
- * Function: back and forth
- * Rotates stepper motor back and forth at specified parameters
- * loops: number of times to go back and forth
- * Degrees: range of motion over which motion is to span
- * rpm: speed in rotations per minute
- */
+   Function: back and forth
+   Rotates stepper motor back and forth at specified parameters
+   loops: number of times to go back and forth
+   Degrees: range of motion over which motion is to span
+   rpm: speed in rotations per minute
+*/
 void backAndForth (int loops, double myDegrees, double rpm) {
   int steps = 0;
   int count = 0;
-  double StepsTillDirectionChange = myDegrees*(stepsPerRot/360);
-  double interval = 60000/(rpm*200);
+  double StepsTillDirectionChange = myDegrees * (stepsPerRot / 360);
+  double interval = 60000 / (rpm * 200);
   Serial.println(interval);
-  
-  while (count<=loops) {
+
+  while (count <= loops) {
     unsigned long currentMillis = millis();
     if (currentMillis - previousMillis >= interval) {
       previousMillis = currentMillis;
       digitalWrite(ledPin, HIGH);
       digitalWrite(stpPin, HIGH);
-      delayMicroseconds(1000);
+      //delayMicroseconds(100);
       digitalWrite(ledPin, LOW);
       digitalWrite(stpPin, LOW);
       steps++;
@@ -57,6 +61,33 @@ void backAndForth (int loops, double myDegrees, double rpm) {
       }
       digitalWrite(dir, stepperDirection);
       steps = 0;
+    }
+  }
+}
+
+
+/*
+   Function: spin
+   Rotates stepper motor around according to parameters
+   rotations: number of rotations to complete
+   rpm: speed in rotations per minute
+   myDirection: direction in which to spin (use syntax CW or CCW)
+*/
+void spin (int rotations, double rpm, int myDirection) {
+  int steps = 0;
+  double interval = 60000 / (rpm * 200);
+  digitalWrite(dir, myDirection);
+  
+  while (steps <= rotations * stepsPerRot) {
+    unsigned long currentMillis = millis();
+    if (currentMillis - previousMillis >= interval) {
+      previousMillis = currentMillis;
+      digitalWrite(ledPin, HIGH);
+      digitalWrite(stpPin, HIGH);
+      //delayMicroseconds(100);
+      digitalWrite(ledPin, LOW);
+      digitalWrite(stpPin, LOW);
+      steps++;
     }
   }
 }
