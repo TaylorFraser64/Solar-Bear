@@ -1,6 +1,7 @@
 #define CW  LOW
 #define CCW HIGH
 
+const double microStepSetting = 32;        //for full step, put 1. For half step, put 2. For 1/16 step, put 16. Etc :)
 const int ledPin =  LED_BUILTIN;
 int ledState = LOW;
 const int dir = 2; //determina a direção
@@ -21,8 +22,8 @@ void setup() {
 
 void loop() {
   //backAndForth(3, 360, 12);
-  //spin(3, 12, CW);
-  delay(99999999999);
+  spin(3, 3, CCW);
+  //delay(99999999999);
 
 
 }
@@ -37,8 +38,8 @@ void loop() {
 void backAndForth (int loops, double myDegrees, double rpm) {
   int steps = 0;
   int count = 0;
-  double StepsTillDirectionChange = myDegrees * (stepsPerRot / 360);
-  double interval = 60000 / (rpm * 200);
+  double StepsTillDirectionChange = myDegrees * (stepsPerRot * microStepSetting / 360);
+  double interval = 60000 / (rpm * 200 * microStepSetting);
   Serial.println(interval);
 
   while (count <= loops) {
@@ -75,7 +76,7 @@ void backAndForth (int loops, double myDegrees, double rpm) {
 */
 void spin (int rotations, double rpm, int myDirection) {
   int steps = 0;
-  double interval = 60000 / (rpm * 200);
+  double interval = 60000 / (rpm * 200 * microStepSetting);
   digitalWrite(dir, myDirection);
   
   while (steps <= rotations * stepsPerRot) {
